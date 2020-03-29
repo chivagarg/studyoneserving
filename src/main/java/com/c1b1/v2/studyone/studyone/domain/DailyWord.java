@@ -1,4 +1,4 @@
-package com.c1b1.v2.studyone.studyone;
+package com.c1b1.v2.studyone.studyone.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

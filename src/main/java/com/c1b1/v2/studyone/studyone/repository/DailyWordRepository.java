@@ -1,4 +1,4 @@
-package com.c1b1.v2.studyone.studyone;
+package com.c1b1.v2.studyone.studyone.repository;
 
 import com.c1b1.v2.studyone.studyone.domain.DailyWord;
 import org.springframework.data.jpa.repository.JpaRepository;
