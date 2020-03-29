@@ -1,14 +1,15 @@
 package com.c1b1.v2.studyone.studyone;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+
+import static org.springframework.http.ResponseEntity.ok;
 
 @Controller // This means that this class is a Controller
 @RequestMapping(path="/v1/words") // This means URL's start with /demo (after Application path)
@@ -18,7 +19,7 @@ public class MainController {
     private DailyWordRepository dailyWords;
 
     @PostMapping(path="/add") // Map ONLY POST Requests
-    public @ResponseBody String add (@RequestParam String word
+    public @ResponseBody ResponseEntity add (HttpServletRequest request, @RequestParam String word
             , @RequestParam String meaning) {
         // @ResponseBody means the returned String is the response, not a view name
         // @RequestParam means it is a parameter from the GET or POST request
@@ -27,13 +28,37 @@ public class MainController {
                 .meaning(meaning)
                 .build();
         dailyWords.save(w);
-        return "Saved";
+        return ResponseEntity.created(
+                ServletUriComponentsBuilder
+                        .fromContextPath(request)
+                        .path("/v1/words/{id}")
+                        .buildAndExpand(w.getId())
+                        .toUri())
+                .build();
+    }
+
+    @PostMapping(path="/create") // Map ONLY POST Requests
+    public @ResponseBody ResponseEntity create(HttpServletRequest request, @RequestBody DisplayWordForm form) {
+        // @ResponseBody means the returned String is the response, not a view name
+        // @RequestParam means it is a parameter from the GET or POST request
+        DailyWord w = DailyWord.builder()
+                .word(form.getWord())
+                .meaning(form.getMeaning())
+                .build();
+        dailyWords.save(w);
+        return ResponseEntity.created(
+                ServletUriComponentsBuilder
+                        .fromContextPath(request)
+                        .path("/v1/words/{id}")
+                        .buildAndExpand(w.getId())
+                        .toUri())
+                .build();
     }
 
     @GetMapping(path="/all")
     public @ResponseBody
-    List<DailyWord> getAllWords() {
+    ResponseEntity getAllWords() {
         // This returns a JSON or XML with the words
-        return dailyWords.findAll();
+        return ok(dailyWords.findAll());
     }
 }
