@@ -33,6 +33,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .authorizeRequests()
                 .antMatchers("/auth/signin").permitAll()
+                .antMatchers("/auth/getorcreate").permitAll()
                 .antMatchers(HttpMethod.GET, "/v1/words/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
