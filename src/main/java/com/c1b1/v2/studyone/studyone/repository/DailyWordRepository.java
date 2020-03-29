@@ -1,7 +1,7 @@
 package com.c1b1.v2.studyone.studyone;
 
+import com.c1b1.v2.studyone.studyone.domain.DailyWord;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.repository.CrudRepository;
 
 
 // This will be AUTO IMPLEMENTED by Spring into a Bean called userRepository
