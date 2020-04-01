@@ -4,24 +4,35 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Date;
 
-@Table(name="daily_word")
+@Table(name="user_word")
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity // This tells Hibernate to make a table out of this class
-public class DailyWord implements Serializable {
+public class UserWord implements Serializable {
     @Id
+    @Column(name="id")
     @GeneratedValue(strategy=GenerationType.AUTO)
-    private Integer id;
+    private Long userWordId;
 
-    private String word;
+    @ManyToOne
+    @JoinColumn(name = "dailyWordId") // this is the name of the FK
+    private DailyWord dailyWord;
 
-    private String meaning;
+    @ManyToOne
+    @JoinColumn(name = "userId") // this is the name of the FK
+    private User user;
 
-    private String pronunciation;
+    @CreationTimestamp
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "create_date")
+    private Date createDate;
 }
+
