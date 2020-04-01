@@ -37,7 +37,8 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        seedUserWord();
+         // seedWords();
+         // seedUserWord();
         // Uncomment and modify to seed data
 //        this.users.save(User.builder()
 //                .username("user")
@@ -57,10 +58,16 @@ public class DataInitializer implements CommandLineRunner {
 //        this.users.findAll().forEach(v -> log.debug(" User :" + v.toString()));
     }
 
+    private void seedWords() {
+        dailyWords.save(DailyWord.builder().word("ChotaWaan").meaning("sabse pyaar").build());
+        dailyWords.save(DailyWord.builder().word("KittyCakes").meaning("most delicious").build());
+        dailyWords.save(DailyWord.builder().word("Boojaan").meaning("hamesha").build());
+    }
+
     private void seedUserWord() {
         logger.info("Going to add userWord");
-        User user = users.findByUsername("shiva").get();
-        DailyWord dailyWord = dailyWords.findAll().get(1);
+        User user = users.findByUsername("admin").get();
+        DailyWord dailyWord = dailyWords.findAll().get(4);
 
         UserWord userWord = UserWord.builder()
                                 .user(user)
