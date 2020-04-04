@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -20,9 +21,15 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.servlet.http.HttpServletRequest;
 
-import java.util.List;
-import java.util.Optional;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.*;
 
+import static java.util.stream.Collectors.toList;
 import static org.springframework.http.ResponseEntity.ok;
 
 @Controller // This means that this class is a Controller
@@ -83,15 +90,29 @@ public class MainController {
     public @ResponseBody
     ResponseEntity dailyWords(@AuthenticationPrincipal UserDetails userDetails){
 
+        Map<Object, Object> model = new HashMap<>();
+
         Optional<User> user =  users.findByUsername(userDetails.getUsername());
 
         if (!user.isPresent())
             throw new InsufficientAuthenticationException("User is not authorized");
 
+        // should limit how many are fetched
         List<UserWord> userWordList = userWords.findByUserId(user.get().getId());
 
+        List<UserWord> userWordsByDate = userWords.findTop100ByUserIdOrderByCreateDateDesc(user.get().getId());
+
+        if (userWordsByDate.isEmpty() || !latestUserWordMatchesServerDate(userWordsByDate)) {
+            // need new static entry from table
+            DailyWord wordOfTheDay = addNewDailyWord(user.get(), userWordsByDate);
+            model.put("wordOfTheDay", wordOfTheDay);
+        } else {
+            System.out.println("We found our max date in the current user word table");
+            model.put("wordOfTheDay", userWordsByDate.get(0));
+        }
+
         // This returns a JSON or XML with the words
-        return ok(userWordList);
+        return ok(model);
     }
 
     @GetMapping(path="/all")
@@ -99,5 +120,39 @@ public class MainController {
     ResponseEntity getAllWords() {
         // This returns a JSON or XML with the words
         return ok(dailyWords.findAll());
+    }
+
+    private DailyWord addNewDailyWord(User user, List<UserWord> userWordsByDate) {
+        DailyWord newDailyWord = userWordsByDate.isEmpty() ?
+                dailyWords.findTop1ByIdGreaterThan( /* lowestId= */0).get(0) :
+                dailyWords.findTop1ByIdGreaterThan(userWordsByDate.get(0).getDailyWord().getId()).get(0);
+
+        userWords.save(UserWord.builder()
+                .user(user)
+                .dailyWord(newDailyWord)
+                .build());
+
+        return newDailyWord;
+    }
+
+    private boolean latestUserWordMatchesServerDate(List<UserWord> userWordsByDate) {
+        UserWord wordWithMaxDate = userWordsByDate.get(0);
+        return matchesServerDate(wordWithMaxDate.getCreateDate());
+    }
+
+    private boolean matchesServerDate(Date savedDate) {
+        Date serverDate = new Date(); // default system date (PST)
+
+        // Default time zone is PST
+        LocalDate serverLocalDate = serverDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+        Instant savedInstant = Instant.ofEpochMilli(savedDate.getTime());
+        LocalDateTime savedLocalDateTime = LocalDateTime.ofInstant(savedInstant, ZoneId.systemDefault());
+        LocalDate savedLocalDate = savedLocalDateTime.toLocalDate();
+
+        System.out.println("Comparing " + savedLocalDate.toString() + " with system local date " + serverLocalDate.toString());
+        System.out.println(savedLocalDate.equals(serverLocalDate));
+        boolean match = savedLocalDate.equals(serverLocalDate);
+        return match;
     }
 }

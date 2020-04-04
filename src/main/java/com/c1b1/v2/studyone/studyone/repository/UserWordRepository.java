@@ -11,4 +11,11 @@ import java.util.List;
 
 public interface UserWordRepository extends JpaRepository<UserWord, Long> {
     List<UserWord> findByUserId(long userId);
+
+    List<UserWord> findByUserIdOrderByCreateDateDesc(long userId);
+
+    List<UserWord> findTop100ByUserIdOrderByCreateDateDesc(long userId);
+
+    // Consider using findByCreateAfter
+    // https://docs.spring.io/spring-data/jpa/docs/current/reference/html/#reference
 }
