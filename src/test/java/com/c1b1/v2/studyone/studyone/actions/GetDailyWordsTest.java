@@ -61,7 +61,7 @@ public class GetDailyWordsTest {
                 .isEqualTo(TEST_USERNAME_1);
 
         // Act
-        DailyWord dailyWord = getDailyWords.getWordOfTheDay(testUser1.get());
+        DailyWord dailyWord = getDailyWords.getDailyAndRepeatingWords(testUser1.get()).getWordOfTheDay();
 
         // Assert that word from daily words with lowest id was saved.
         assertThat(dailyWord.getId()).isEqualTo(dailyWords.findTop1ByIdGreaterThan(0).get(0).getId());
@@ -80,7 +80,7 @@ public class GetDailyWordsTest {
 
         // Act
         // By default timestamp of get call and time stamp of server should match.
-        DailyWord dailyWord = getDailyWords.getWordOfTheDay(testUser1);
+        DailyWord dailyWord = getDailyWords.getDailyAndRepeatingWords(testUser1).getWordOfTheDay();
 
         // Assert that word from daily words with lowest id was saved.
         assertThat(dailyWord.getWord()).isEqualTo(DAILY_WORDS.get(2).getWord());
@@ -109,7 +109,7 @@ public class GetDailyWordsTest {
 
         // Act
         // By default timestamp of get call and time stamp of server should match.
-        DailyWord returned = getDailyWords.getWordOfTheDay(testUser1);
+        DailyWord returned = getDailyWords.getDailyAndRepeatingWords(testUser1).getWordOfTheDay();
 
         // Assert that word from daily words with lowest id was saved.
         assertThat(returned.getId()).isEqualTo(expectedNewWord.getId());

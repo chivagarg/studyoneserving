@@ -1,19 +1,16 @@
 package com.c1b1.v2.studyone.studyone;
 
+import com.c1b1.v2.studyone.studyone.actions.DailyAndRepeatedWords;
 import com.c1b1.v2.studyone.studyone.actions.GetDailyWords;
 import com.c1b1.v2.studyone.studyone.domain.DailyWord;
 import com.c1b1.v2.studyone.studyone.domain.DisplayWordForm;
 import com.c1b1.v2.studyone.studyone.domain.User;
-import com.c1b1.v2.studyone.studyone.domain.UserWord;
 import com.c1b1.v2.studyone.studyone.repository.DailyWordRepository;
 import com.c1b1.v2.studyone.studyone.repository.UserRepository;
 import com.c1b1.v2.studyone.studyone.repository.UserWordRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -22,15 +19,8 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.servlet.http.HttpServletRequest;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.*;
 
-import static java.util.stream.Collectors.toList;
 import static org.springframework.http.ResponseEntity.ok;
 
 @Controller // This means that this class is a Controller
@@ -97,10 +87,8 @@ public class MainController {
         if (!user.isPresent())
             throw new InsufficientAuthenticationException("User is not authorized");
 
-        DailyWord wordOfTheDay = getDailyWordsActionHandler.getWordOfTheDay(user.get());
-        model.put("wordOfTheDay", wordOfTheDay);
-
-        List<UserWord> userWordsByDate = userWords.findTop100ByUserIdOrderByCreateDateDesc(user.get().getId());
+        DailyAndRepeatedWords dailyAndRepeatedWords = getDailyWordsActionHandler.getDailyAndRepeatingWords(user.get());
+        model.put("wordOfTheDay", dailyAndRepeatedWords.getWordOfTheDay());
 
         // This returns a JSON or XML with the words
         return ok(model);

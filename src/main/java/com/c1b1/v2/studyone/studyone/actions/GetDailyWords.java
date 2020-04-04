@@ -29,17 +29,18 @@ public class GetDailyWords {
     @Autowired
     private UserRepository users;
 
-    public DailyWord getWordOfTheDay(User user) {
-
+    public DailyAndRepeatedWords getDailyAndRepeatingWords(User user) {
+        DailyAndRepeatedWords.DailyAndRepeatedWordsBuilder dailyAndRepeatedWords = DailyAndRepeatedWords.builder();
         List<UserWord> userWordsByDate = userWords.findTop100ByUserIdOrderByCreateDateDesc(user.getId());
 
         if (userWordsByDate.isEmpty() || !latestUserWordMatchesServerDate(userWordsByDate)) {
             // need new static entry from table
-            return addNewDailyWord(user, userWordsByDate);
+            DailyWord toAdd = addNewDailyWord(user, userWordsByDate);
+            return dailyAndRepeatedWords.wordOfTheDay(toAdd).build();
         }
 
-        // The lastest word in the current userWord table is the word of the day.
-        return userWordsByDate.get(0).getDailyWord();
+        // The latest word in the current userWord table is the word of the day.
+        return dailyAndRepeatedWords.wordOfTheDay(userWordsByDate.get(0).getDailyWord()).build();
     }
 
     private DailyWord addNewDailyWord(User user, List<UserWord> userWordsByDate) {
