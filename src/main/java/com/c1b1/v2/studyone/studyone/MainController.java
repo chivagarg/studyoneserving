@@ -89,6 +89,7 @@ public class MainController {
 
         DailyAndRepeatedWords dailyAndRepeatedWords = getDailyWordsActionHandler.getDailyAndRepeatingWords(user.get());
         model.put("wordOfTheDay", dailyAndRepeatedWords.getWordOfTheDay());
+        model.put("repeatedWords", dailyAndRepeatedWords.getPastWords());
 
         // This returns a JSON or XML with the words
         return ok(model);

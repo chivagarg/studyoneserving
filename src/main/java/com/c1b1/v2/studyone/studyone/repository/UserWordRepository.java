@@ -16,6 +16,8 @@ import java.util.List;
 public interface UserWordRepository extends JpaRepository<UserWord, Long> {
     List<UserWord> findByUserId(long userId);
 
+    List<UserWord> findTop1ByUserIdOrderByCreateDateDesc(long userId);
+
     List<UserWord> findTop100ByUserIdOrderByCreateDateDesc(long userId);
 
     // Note: For testing only
