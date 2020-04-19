@@ -10,7 +10,9 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
 
-@Table(name="user_word")
+@Table(name="user_word",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"dailyWordId", "userId"})
+)
 @Data
 @Builder
 @AllArgsConstructor

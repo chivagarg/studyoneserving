@@ -36,11 +36,15 @@ public class GetDailyWords {
         DailyAndRepeatedWords.DailyAndRepeatedWordsBuilder dailyAndRepeatedWords = DailyAndRepeatedWords.builder();
         List<UserWord> userWordsByDate = userWords.findTop1ByUserIdOrderByCreateDateDesc(user.getId());
 
+        System.out.println("Received request to get daily word for user " + user.getUsername() + " on thread " + Thread.currentThread().getName());
+
         if (userWordsByDate.isEmpty() || !matchesServerDate(userWordsByDate.get(0).getCreateDate())) {
             // need new static entry from table
+            System.out.println("Fetching entry from static table!");
             DailyWord toAdd = addNewDailyWord(user, userWordsByDate);
             dailyAndRepeatedWords.wordOfTheDay(toAdd);
         } else {
+            System.out.println("Latest word is in the user table already!");
             // The latest word in the current userWord table is the word of the day.
             dailyAndRepeatedWords.wordOfTheDay(userWordsByDate.get(0).getDailyWord());
         }
@@ -59,6 +63,9 @@ public class GetDailyWords {
             if (REMINDER_DAYS.contains(i))
                 repeated.add(userWordsByDateDesc.get(i).getDailyWord());
         }
+
+        for (DailyWord w : repeated)
+            System.out.print(w.getWord() + ",");
 
         return repeated;
     }

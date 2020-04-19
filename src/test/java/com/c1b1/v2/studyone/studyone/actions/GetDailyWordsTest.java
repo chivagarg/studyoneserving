@@ -39,9 +39,9 @@ public class GetDailyWordsTest {
     @Autowired
     GetDailyWords getDailyWords;
 
-    private static final DailyWord WORD_0 = DailyWord.builder().word("Apple").meaning("fruit").build();
-    private static final DailyWord WORD_1 = DailyWord.builder().word("Car").meaning("zoom zoom").build();
-    private static final DailyWord WORD_2 = DailyWord.builder().word("Kitten").meaning("kitty-ta-bo-ni-ta").build();
+    private static final DailyWord WORD_0 = DailyWord.builder().word("Apple").meaning("fruit").pronunciation("fru-t").build();
+    private static final DailyWord WORD_1 = DailyWord.builder().word("Car").meaning("zoom zoom").pronunciation("zoom-zoom").build();
+    private static final DailyWord WORD_2 = DailyWord.builder().word("Kitten").meaning("kitty-ta-bo-ni-ta").pronunciation("kitty-ta").build();
 
     private static final List<DailyWord> DAILY_WORDS =
             Arrays.asList(new DailyWord[]{WORD_0, WORD_1, WORD_2});
@@ -218,7 +218,8 @@ public class GetDailyWordsTest {
         for (int i = 0; i < num; ++i) {
             String word = "word" + i;
             String meaning = "meaning" + i;
-            toSave.add(DailyWord.builder().word(word).meaning(meaning).build());
+            String pronunciation = "pronunciation" + i;
+            toSave.add(DailyWord.builder().word(word).meaning(meaning).pronunciation(pronunciation).build());
         }
         dailyWords.saveAll(toSave);
     }
