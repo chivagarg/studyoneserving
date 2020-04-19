@@ -10,9 +10,10 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
 
+/* Unique constraint should work when table is dropped and recreated.
+ {@see https://stackoverflow.com/questions/2944112/unique-constraint-not-created-in-jpa } */
 @Table(name="user_word",
-        uniqueConstraints = @UniqueConstraint(columnNames = {"dailyWordId", "userId"})
-)
+        uniqueConstraints = @UniqueConstraint(columnNames = {"dailyWordId", "userId"}))
 @Data
 @Builder
 @AllArgsConstructor
